@@ -1,93 +1,116 @@
-# library/operations.py
-
-# library/operations.py
-
 from library.book import Book
 from library.user import User
 from library.author import Author
 from library.genre import Genre
-from library.database import create_connection
 
-import re
-
-def add_book(conn, book):
+# Function to view all books
+def view_books(conn):
     cursor = conn.cursor()
-    sql = "INSERT INTO books (title, author_id, genre_id, isbn, publication_date, availability) VALUES (%s, %s, %s, %s, %s, %s)"
-    values = (book.title, book.author_id, book.genre_id, book.isbn, book.publication_date, book.availability)
-    cursor.execute(sql, values)
-    conn.commit()
+    cursor.execute("SELECT * FROM books")
+    rows = cursor.fetchall()
+    for row in rows:
+        print(row)
+    cursor.close()
 
-def add_user(conn, user):
+# Function to view all users
+def view_users(conn):
     cursor = conn.cursor()
-    sql = "INSERT INTO users (name, library_id) VALUES (%s, %s)"
-    values = (user.name, user.library_id)
-    cursor.execute(sql, values)
-    conn.commit()
+    cursor.execute("SELECT * FROM users")
+    rows = cursor.fetchall()
+    for row in rows:
+        print(row)
+    cursor.close()
 
-def add_author(conn, author):
+# Function to view all authors
+def view_authors(conn):
     cursor = conn.cursor()
-    sql = "INSERT INTO authors (name, biography) VALUES (%s, %s)"
-    values = (author.name, author.biography)
-    cursor.execute(sql, values)
-    conn.commit()
+    cursor.execute("SELECT * FROM authors")
+    rows = cursor.fetchall()
+    for row in rows:
+        print(row)
+    cursor.close()
 
-def add_genre(conn, genre):
+# Function to view all genres
+def view_genres(conn):
     cursor = conn.cursor()
-    sql = "INSERT INTO genres (name, description, category) VALUES (%s, %s, %s)"
-    values = (genre.name, genre.description, genre.category)
-    cursor.execute(sql, values)
+    cursor.execute("SELECT * FROM genres")
+    rows = cursor.fetchall()
+    for row in rows:
+        print(row)
+    cursor.close()
+
+# Function to update a book
+def update_book(conn):
+    book_id = input("Enter book ID to update: ")
+    new_title = input("Enter new title: ")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE books SET title = %s WHERE id = %s", (new_title, book_id))
     conn.commit()
+    print(f"Book ID {book_id} updated successfully.")
+    cursor.close()
 
-def get_valid_isbn():
-    while True:
-        isbn = input("Enter ISBN: ")
-        if re.match(r'^\d{13}$', isbn):
-            return isbn
-        else:
-            print("Invalid ISBN. Please enter a 13-digit number.")
+# Function to update a user
+def update_user(conn):
+    user_id = input("Enter user ID to update: ")
+    new_name = input("Enter new name: ")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET name = %s WHERE id = %s", (new_name, user_id))
+    conn.commit()
+    print(f"User ID {user_id} updated successfully.")
+    cursor.close()
 
-def add_new_book(conn):
-    title = input("Enter book title: ")
-    author_id = int(input("Enter author ID: "))
-    genre_id = int(input("Enter genre ID: "))
-    isbn = get_valid_isbn()
-    publication_date = input("Enter publication date (YYYY-MM-DD): ")
-    
-    book = Book(title, author_id, genre_id, isbn, publication_date)
-    add_book(conn, book)
-    print("Book added successfully.")
+# Function to update an author
+def update_author(conn):
+    author_id = input("Enter author ID to update: ")
+    new_name = input("Enter new name: ")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE authors SET name = %s WHERE id = %s", (new_name, author_id))
+    conn.commit()
+    print(f"Author ID {author_id} updated successfully.")
+    cursor.close()
 
-def add_new_user(conn):
-    try:
-        name = input("Enter user name: ")
-        library_id = input("Enter library ID: ")
-        
-        user = User(name, library_id)
-        add_user(conn, user)
-        print("User added successfully.")
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-    else:
-        print("Operation completed successfully.")
-    finally:
-        if conn.is_connected():
-            conn.close()
+# Function to update a genre
+def update_genre(conn):
+    genre_id = input("Enter genre ID to update: ")
+    new_name = input("Enter new name: ")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE genres SET name = %s WHERE id = %s", (new_name, genre_id))
+    conn.commit()
+    print(f"Genre ID {genre_id} updated successfully.")
+    cursor.close()
 
-def add_new_author(conn):
-    name = input("Enter author name: ")
-    biography = input("Enter author biography: ")
-    
-    author = Author(name, biography)
-    add_author(conn, author)
-    print("Author added successfully.")
+# Function to delete a book
+def delete_book(conn):
+    book_id = input("Enter book ID to delete: ")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM books WHERE id = %s", (book_id,))
+    conn.commit()
+    print(f"Book ID {book_id} deleted successfully.")
+    cursor.close()
 
-def add_new_genre(conn):
-    name = input("Enter genre name: ")
-    description = input("Enter genre description: ")
-    category = input("Enter genre category: ")
-    
-    genre = Genre(name, description, category)
-    add_genre(conn, genre)
-    print("Genre added successfully.")
+# Function to delete a user
+def delete_user(conn):
+    user_id = input("Enter user ID to delete: ")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+    conn.commit()
+    print(f"User ID {user_id} deleted successfully.")
+    cursor.close()
+
+# Function to delete an author
+def delete_author(conn):
+    author_id = input("Enter author ID to delete: ")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM authors WHERE id = %s", (author_id,))
+    conn.commit()
+    print(f"Author ID {author_id} deleted successfully.")
+    cursor.close()
+
+# Function to delete a genre
+def delete_genre(conn):
+    genre_id = input("Enter genre ID to delete: ")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM genres WHERE id = %s", (genre_id,))
+    conn.commit()
+    print(f"Genre ID {genre_id} deleted successfully.")
+    cursor.close()
